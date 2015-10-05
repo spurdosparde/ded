@@ -1,8 +1,19 @@
 # ded
 Digital Encrypted Diary
 
-A feather light text mode diary program, that encrypts every entry before storing it in a sqlite database.
-It uses vim as the editor.
+A feather light text mode diary program for linux, that encrypts every entry (AES-256, openssl implementation) before storing it in a sqlite database.
+It uses vim as the editor and ncurses.
+
+You'll be prompted to enter a key at the start, it will be used during the session to encrypt/decrypt the entries.
+Obviously, wrong key = garbage on your screen.
+
+Dependencies:
+            - openssl
+            - ncurses
+            - sqlite3
+            
+How to build:
+            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
 
 It's licensed under the WTFPL license:
 
