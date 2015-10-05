@@ -1,0 +1,2 @@
+# ded
+Digital Encrypted Diary
