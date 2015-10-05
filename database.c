@@ -4,7 +4,7 @@ sqlite3* openDatabase(unsigned char* key)
 {
 	sqlite3 *db;
 
-	if(sqlite3_open("/home/sylvain/data/sylvain/Documents/developpement/ded/entries.db", &db))
+	if(sqlite3_open("entries.db", &db))
 	{
 		printf("Error, can't open database\n");
 		return NULL;
