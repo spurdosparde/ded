@@ -8,6 +8,7 @@ You'll be prompted to enter a key at the start, it will be used during the sessi
 Obviously, wrong key = garbage on your screen.
 
 Dependencies:
+
             - openssl
             - ncurses
             - sqlite3
