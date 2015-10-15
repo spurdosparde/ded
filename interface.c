@@ -12,17 +12,28 @@ void ncInterface(sqlite3* database, char* key)
 	updateEntriesOfMonth();
 
 	initNcurses();
+	WINDOW *calendar, *display;
+	int row, col;
+	getmaxyx(stdscr, row, col);
+
+	scrollOffset = 0;
+
+	calendar = newwin(10, 50, 0, 0);
+	display = newwin(row - 10, MIN(100,col), 11, 0);
+	wborder(display, ' ', ' ', '-', '-', ' ', ' ', ' ', ' ');
+
 
 	bool cont = true;
 	int input;
 
 	while(cont)
 	{
-		erase();
-		drawCalendar();
-		loadEntry(key);
-		printCurrentEntry();
+		//erase();
 		refresh();
+		drawCalendar(calendar);
+		loadEntry(key);
+		printCurrentEntry(display);
+		//refresh();
 		input = getch();
 
 		switch(input)
@@ -39,6 +50,15 @@ void ncInterface(sqlite3* database, char* key)
 			case 76:
 				currentDate.year ++;
 				updateEntriesOfMonth();
+				break;
+
+			case 106:
+				scrollOffset ++;
+				break;
+
+			case 107:
+				if(scrollOffset >0)
+					scrollOffset --;
 				break;
 
 			case 104:
@@ -119,7 +139,7 @@ static void updateEntriesOfMonth()
 	getEntriesByMonth(currentDate.year, currentDate.month, &entriesOfMonth, db);
 }
 
-static void drawCalendar()
+static void drawCalendar(WINDOW* w)
 {
 	/*char lineTmp[35];
 	  for(int i = 0; i < entriesOfMonth.bufferIndex; i++)
@@ -128,10 +148,11 @@ static void drawCalendar()
 	  mvprintw(i, 5, lineTmp);
 	  }*/
 
-	mvprintw(0,0,"%s - %d", monthesNames[currentDate.month - 1], currentDate.year);
+	werase(w);
+	mvwprintw(w,1,1,"%s - %d", monthesNames[currentDate.month - 1], currentDate.year);
 
 	for(int i = 0; i < 7; i++)
-		mvprintw(2, 6 * i + 2, "%s", daysNames[i]);
+		mvwprintw(w,2, 6 * i + 2, "%s", daysNames[i]);
 
 	int n = daysInMonth(currentDate.year, currentDate.month);
 	int offset = firstDayOfMonth(currentDate);
@@ -144,21 +165,24 @@ static void drawCalendar()
 		d.day = i;
 
 		if(i == currentDate.day)
-			attron(A_REVERSE);
-		mvprintw(3 + (i + offset - 1)/7, ((i + offset - 1)%7) * 6 + 2, "%d", i);
-		attroff(A_REVERSE);
+			wattron(w,A_REVERSE);
+		mvwprintw(w,3 + (i + offset - 1)/7, ((i + offset - 1)%7) * 6 + 2, "%d", i);
+		wattroff(w,A_REVERSE);
 		if(entryToDate(d))
 		{
-			mvprintw(3 + (i + offset - 1)/7, ((i + offset - 1)%7) * 6 + 1, "%c", '*');
+			mvwprintw(w,3 + (i + offset - 1)/7, ((i + offset - 1)%7) * 6 + 1, "%c", '*');
 		}
 
 	}
+	wrefresh(w);
 }
 
-static void printCurrentEntry()
+static void printCurrentEntry(WINDOW* w)
 {
-	mvprintw(10,0,"---------- %d-%02d-%02d ----------", currentDate.year, currentDate.month, currentDate.day);
-	mvprintw(12,0,"%s", currentEntry.content);
+	werase(w);
+	mvwprintw(w,0,10,"~~~~~~~~~~ %d-%02d-%02d ~~~~~~~~~~", currentDate.year, currentDate.month, currentDate.day);
+	mvwprintw(w,2 - scrollOffset,0,"%s", currentEntry.content);
+	wrefresh(w);
 }
 
 static void loadEntry(char* key)

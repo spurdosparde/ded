@@ -1,10 +1,16 @@
 #include "database.h"
 
+static int readCallback(void *data, int argc, char** argv, char** colNames);
+static int getCallback(void *data, int argc, char** argv, char** colNames);
+
 sqlite3* openDatabase(unsigned char* key)
 {
 	sqlite3 *db;
 
-	if(sqlite3_open("entries.db", &db))
+	const char* dbPath;
+	cfgGetDbPath(&dbPath);
+
+	if(sqlite3_open(dbPath, &db))
 	{
 		printf("Error, can't open database\n");
 		return NULL;
@@ -12,6 +18,7 @@ sqlite3* openDatabase(unsigned char* key)
 	else
 	{
 		printf("Database succesfully opened\n");
+		sqlite3_exec(db, "create table if not exists entries(ID INTEGER PRIMARY KEY AUTOINCREMENT, content STRING, date DATE);", NULL, NULL, NULL);
 		return db;
 	}
 }
@@ -101,7 +108,6 @@ void updateEntry(struct entry* buffer, sqlite3* db, unsigned char* key)
 	int num = 0;
 
 	encrypt(buffer->content, encEntry, key);
-	printf("encrypted\n");	
 	char query[100 + ENTRY_SIZE*4/3]; 
 	sprintf(query, "UPDATE entries SET content = \"%s\" WHERE ID=\"%d\";", encEntry, buffer->header.ID);
 

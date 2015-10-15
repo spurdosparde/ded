@@ -1,5 +1,6 @@
 #include "editor.h"
 #include "interface.h"
+#include <unistd.h>
 
 #define NCURSES true
 
@@ -17,11 +18,13 @@ int main(int argc, char** argv)
 	}
 	else
 	{
-		char dbFile[101] = "";
-		unsigned char key[57] = "";
+		unsigned char key[57] = {0};
+		char* tmp_key = 0;
 
-		printf("Enter key (max 56 characters): ");
-		scanf("%56s", key);
+		cfgInit("ded.cfg");
+
+		tmp_key = getpass("Enter key (max 56 characters): ");
+		strncpy(key,tmp_key,56);
 
 		int l = sizeof(argv[0]);
 		//strncpy(dbFile, argv[0], max(100,l));
