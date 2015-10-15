@@ -12,9 +12,10 @@ Dependencies:
             - openssl
             - ncurses
             - sqlite3
+            - libconfig
             
 How to build:
-            gcc -o ded *.c -lcrypto -lsqlite3 -lncursesw
+            gcc -o ded *.c -lcrypto -lsqlite3 -lncursesw -lconfig
 
 It's licensed under the WTFPL license:
 
