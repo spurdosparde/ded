@@ -11,68 +11,61 @@ void modifEntry(sqlite3* db, char* key);
 
 int main(int argc, char** argv)
 {
-	if(argc != 1 && 1 == 0)
+	unsigned char key[57] = {0};
+	char* tmp_key = 0;
+
+	cfgInit("ded.cfg");
+
+	tmp_key = getpass("Enter key (max 56 characters): ");
+	strncpy(key,tmp_key,56);
+
+	int l = sizeof(argv[0]);
+	//strncpy(dbFile, argv[0], max(100,l));
+	sqlite3 *db;
+	db = openDatabase(key);
+
+	if(NCURSES)
 	{
-		printf("Usage: semavy <path_to_diary>");
-		return -1;
+		ncInterface(db, key);
 	}
 	else
 	{
-		unsigned char key[57] = {0};
-		char* tmp_key = 0;
 
-		cfgInit("ded.cfg");
+		int choice = 0;
 
-		tmp_key = getpass("Enter key (max 56 characters): ");
-		strncpy(key,tmp_key,56);
-
-		int l = sizeof(argv[0]);
-		//strncpy(dbFile, argv[0], max(100,l));
-		sqlite3 *db;
-		db = openDatabase(key);
-
-		if(NCURSES)
+		while(choice != 4)
 		{
-			ncInterface(db, key);
-		}
-		else
-		{
+			printf("1: Add new entry, 2: Read Entry, 3: List all entries, 4: Quit, 5: edit entry\n");
+			scanf("%d", &choice);
 
-			int choice = 0;
-
-			while(choice != 4)
+			switch(choice)
 			{
-				printf("1: Add new entry, 2: Read Entry, 3: List all entries, 4: Quit, 5: edit entry\n");
-				scanf("%d", &choice);
+				case 1:
+					createEntry(db, key);
+					break;
 
-				switch(choice)
-				{
-					case 1:
-						createEntry(db, key);
-						break;
+				case 2:
+					openEntry(db, key);
+					break;
 
-					case 2:
-						openEntry(db, key);
-						break;
+				case 3:
+					listEntries(db);
+					break;
 
-					case 3:
-						listEntries(db);
-						break;
+				case 5:
+					modifEntry(db, key);
+					break;
 
-					case 5:
-						modifEntry(db, key);
-						break;
-
-					default:
-						break;
-				}
+				default:
+					break;
 			}
 		}
-
-		closeDatabase(db);
-
-		return 0;
 	}
+
+	closeDatabase(db);
+
+	return 0;
+
 }
 
 void createEntry(sqlite3 *db, char* key)
