@@ -37,3 +37,7 @@ void updateEntry(struct entry* buffer, sqlite3* db, unsigned char* key);
 void getEntriesByMonth(int year, int month, struct entryHeaderArray* buffer, sqlite3* db);
 
 void delEntry(int ID, sqlite3* db);
+
+static int readCallback(void *data, int argc, char** argv, char** colNames);
+static int getCallback(void *data, int argc, char** argv, char** colNames);
+

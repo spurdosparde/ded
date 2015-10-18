@@ -1,8 +1,5 @@
 #include "database.h"
 
-static int readCallback(void *data, int argc, char** argv, char** colNames);
-static int getCallback(void *data, int argc, char** argv, char** colNames);
-
 sqlite3* openDatabase(unsigned char* key)
 {
 	sqlite3 *db;
